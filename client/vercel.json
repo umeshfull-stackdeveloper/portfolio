@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://your-portfolio-backend.onrender.com/api/:path*"
+    },
+    {
+      "source": "/resume.pdf",
+      "destination": "/resume.pdf"
+    },
+    {
+      "source": "/((?!api|resume.pdf).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
