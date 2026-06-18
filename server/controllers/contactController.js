@@ -27,11 +27,17 @@ const createContact = async (req, res, next) => {
     if (emailUser && emailPass && emailPass !== 'your_gmail_app_password_here') {
       try {
         const transporter = nodemailer.createTransport({
-          service: 'gmail',
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false,
+          family: 4,
           auth: {
             user: emailUser,
             pass: emailPass,
           },
+          connectionTimeout: 30000,
+          greetingTimeout: 30000,
+          socketTimeout: 30000,
         });
 
         const mailOptions = {
@@ -50,6 +56,9 @@ const createContact = async (req, res, next) => {
             <p style="white-space: pre-wrap; background-color: #f9f9f9; padding: 1rem; border-left: 4px solid #6366f1; border-radius: 4px;">${message}</p>
           `,
         };
+
+        await transporter.verify();
+        console.log('SMTP connection successful');
 
         await transporter.sendMail(mailOptions);
         console.log(`Email successfully dispatched to ${emailUser} for: ${name}`);
