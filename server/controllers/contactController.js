@@ -54,14 +54,11 @@ const createContact = async (req, res, next) => {
         await transporter.sendMail(mailOptions);
         console.log(`Email successfully dispatched to ${emailUser} for: ${name}`);
       } catch (emailErr) {
-        console.error('SMTP email dispatch failed (please check credentials):', emailErr.message);
-        res.status(500);
-        return next(new Error(`Failed to send email to ${emailUser}: ${emailErr.message}. Please check your EMAIL_PASS / App Password.`));
+        console.error('SMTP email dispatch failed:', emailErr.message);
+        console.log('Contact message saved successfully, but email was not sent.');
       }
     } else {
-      console.warn('SMTP credentials (EMAIL_USER & EMAIL_PASS) not fully configured in .env.');
-      res.status(400);
-      return next(new Error('Email service is not configured. Please set EMAIL_PASS in server/.env with a valid Google App Password.'));
+      console.warn('SMTP credentials not configured. Skipping email sending.');
     }
 
     res.status(201).json({

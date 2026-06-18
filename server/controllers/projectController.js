@@ -62,11 +62,20 @@ const getProjects = async (req, res, next) => {
       });
     }
 
-    const projects = await Project.find({}).sort({ featured: -1, createdAt: -1 });
+    const projects = await Project.find({}).sort({ featured: -1, createdAt: -1 }).lean();
+    const normalized = projects.map(p => ({
+      ...p,
+      technologies: (p.technologies && p.technologies.length > 0)
+        ? p.technologies
+        : (p.techStack || []),
+      githubLink: p.githubLink || p.github || '',
+      liveLink: p.liveLink || p.live || '',
+      featured: !!p.featured
+    }));
     res.status(200).json({
       success: true,
-      count: projects.length,
-      data: projects,
+      count: normalized.length,
+      data: normalized,
     });
   } catch (error) {
     next(error);
