@@ -1,15 +1,16 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 const { errorHandler } = require('./middleware/errorMiddleware');
 const projectRoutes = require('./routes/projectRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 // Load environment variables
-dotenv.config();
+console.log("ENV MONGO_URI =", process.env.MONGO_URI);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -30,12 +31,22 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Database connection
 mongoose.set('bufferCommands', false);
+
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/portfolio');
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI is missing in .env file");
+    }
+
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 10000,
+      family: 4
+    });
+
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error(`Database Connection Error: ${error.message}. Continuing server execution without MongoDB.`);
+    console.error(`Database Connection Error: ${error.message}`);
+    process.exit(1);
   }
 };
 
@@ -44,6 +55,7 @@ connectDB();
 // API Routes
 app.use('/api/projects', projectRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -57,6 +69,8 @@ app.use(errorHandler);
 const server = app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });
+
+console.log("ADMIN PASSWORD FROM ENV =", process.env.ADMIN_PASSWORD);
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
