@@ -8,7 +8,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
-  
+
   // Status feedback states
   const [authError, setAuthError] = useState('');
   const [status, setStatus] = useState({ success: null, message: '' });
@@ -32,7 +32,7 @@ const Admin = () => {
   const fetchAdminProjects = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/projects');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects`);
       const json = await res.json();
       if (json.success) {
         setProjects(json.data);
@@ -57,20 +57,29 @@ const Admin = () => {
       setAuthError('Please enter the administrator password.');
       return;
     }
-    
+
     setAuthLoading(true);
     setAuthError('');
     try {
-      const res = await fetch('/api/projects/verify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ password })
-      });
-      
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/projects/verify`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ password })
+        }
+      );
+      const Json = await res.json();
+
+      if (res.ok && json.success) {
+        setIsAuthenticated(true);
+        setAuthError('');
+      }
+
       const json = await res.json();
-      
+
       if (res.ok && json.success) {
         setIsAuthenticated(true);
         setAuthError('');
@@ -168,7 +177,9 @@ const Admin = () => {
     };
 
     try {
-      const url = editingId ? `/api/projects/${editingId}` : '/api/projects';
+      const url = editingId
+        ? `${import.meta.env.VITE_API_URL}/api/projects/${editingId}`
+        : `${import.meta.env.VITE_API_URL}/api/projects`;;
       const method = editingId ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
@@ -213,13 +224,15 @@ const Admin = () => {
     setStatus({ success: null, message: '' });
 
     try {
-      const res = await fetch(`/api/projects/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'X-Admin-Password': password
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/projects/${id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'X-Admin-Password': password
+          }
         }
-      });
-
+      );
       const json = await res.json();
 
       if (res.ok && json.success) {

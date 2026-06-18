@@ -396,7 +396,15 @@ const Projects = () => {
       }
       const json = await res.json();
       if (json.success && json.data && json.data.length > 0) {
-        setProjects(json.data);
+        const normalized = json.data.map(project => ({
+          ...project,
+          technologies: project.technologies?.length
+            ? project.technologies
+            : project.techStack || [],
+          githubLink: project.githubLink || project.github || '',
+          liveLink: project.liveLink || project.live || ''
+        }));
+        setProjects(normalized);
         setUsingMock(false);
       } else {
         // If DB has 0 items, load fallbacks to prevent empty screen

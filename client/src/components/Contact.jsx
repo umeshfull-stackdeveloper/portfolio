@@ -39,7 +39,7 @@ const Contact = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    
+
     // Clear error for this field as the user types
     if (errors[name]) {
       setErrors({ ...errors, [name]: '' });
@@ -54,7 +54,7 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate all fields
     const newErrors = {};
     Object.keys(formData).forEach((key) => {
@@ -72,14 +72,14 @@ const Contact = () => {
     // Submit form
     setStatus({ loading: true, success: null, message: '' });
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(formData)
       });
-      
+
       let json = {};
       const contentType = res.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
@@ -87,7 +87,7 @@ const Contact = () => {
       } else {
         throw new Error(`Server returned a non-JSON response (Status ${res.status}). Please make sure your backend server is running.`);
       }
-      
+
       if (res.ok && json.success) {
         setStatus({
           loading: false,
@@ -118,7 +118,7 @@ const Contact = () => {
             <h3 style={{ fontSize: '1.75rem', fontWeight: 700 }}>
               Let's build something <span className="gradient-text">extraordinary</span> together.
             </h3>
-            
+
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: 1.7 }}>
               Feel free to reach out via the contact form or using the details below. I try to reply to all inquiries within 24 hours.
             </p>
