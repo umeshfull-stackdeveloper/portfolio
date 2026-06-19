@@ -181,8 +181,8 @@ const Admin = () => {
 
     try {
       const url = editingId
-        ? `${import.meta.env.VITE_API_URL}/api/projects/${editingId}`
-        : `${import.meta.env.VITE_API_URL}/api/projects`;;
+        ? `${API_URL}/api/projects`
+        : `${API_URL}/api/projects/${editingId}`;;
       const method = editingId ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
@@ -227,7 +227,7 @@ const Admin = () => {
 
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/projects/${id}`,
+        `${API_URL}/api/projects/${id}`,
         {
           method: 'DELETE',
           headers: {

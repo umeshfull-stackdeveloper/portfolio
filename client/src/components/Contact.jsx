@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Send, MapPin, Mail, Phone, CheckCircle, AlertTriangle } from 'lucide-react';
 
 const Contact = () => {
+  const API_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, '');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -72,7 +73,7 @@ const Contact = () => {
     // Submit form
     setStatus({ loading: true, success: null, message: '' });
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
+      const res = await fetch(`${API_URL}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
